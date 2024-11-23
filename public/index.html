@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Node.js, MySQL2, and HTML CRUD</title>
+</head>
+<body>
+  <h1>INSTACKS</h1>
+
+  <div>
+    <h2>Add User</h2>
+    <form id="addUserForm">
+      <input type="text" id="name" placeholder="Name" required />
+      <input type="email" id="email" placeholder="Email" required />
+      <button type="submit">Add User</button>
+    </form>
+  </div>
+
+  <div>
+    <h2>Update User</h2>
+    <form id="updateUserForm">
+      <input type="number" id="userId" placeholder="User ID" required />
+      <input type="text" id="updateName" placeholder="New Name" required />
+      <input type="email" id="updateEmail" placeholder="New Email" required />
+      <button type="submit">Update User</button>
+    </form>
+  </div>
+
+  <div>
+    <h2>Delete User</h2>
+    <form id="deleteUserForm">
+      <input type="number" id="deleteUserId" placeholder="User ID" required />
+      <button type="submit">Delete User</button>
+    </form>
+  </div>
+
+  <h2>Users List</h2>
+  <ul id="userList"></ul>
+
+  <script>
+    // Fetch all users
+    function getUsers() {
+      fetch('/users')
+        .then(response => response.json())
+        .then(users => {
+          const userList = document.getElementById('userList');
+          userList.innerHTML = '';
+          users.forEach(user => {
+            const li = document.createElement('li');
+            li.textContent = `${user.name} - ${user.email}`;
+            userList.appendChild(li);
+          });
+        });
+    }
+
+    // Handle add user
+    document.getElementById('addUserForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+
+      fetch('/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email })
+      })
+        .then(response => response.json())
+        .then(data => {
+          alert('User added!');
+          getUsers();
+        });
+    });
+
+    // Handle update user
+    document.getElementById('updateUserForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const id = document.getElementById('userId').value;
+      const name = document.getElementById('updateName').value;
+      const email = document.getElementById('updateEmail').value;
+
+      fetch(`/users/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email })
+      })
+        .then(response => response.json())
+        .then(data => {
+          alert('User updated!');
+          getUsers();
+        });
+    });
+
+    // Handle delete user
+    document.getElementById('deleteUserForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const id = document.getElementById('deleteUserId').value;
+
+      fetch(`/users/${id}`, {
+        method: 'DELETE'
+      })
+        .then(response => response.json())
+        .then(data => {
+          alert('User deleted!');
+          getUsers();
+        });
+    });
+
+    // Initial load of users
+    getUsers();
+  </script>
+</body>
+</html>
