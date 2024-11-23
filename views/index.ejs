@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz</title>
+    <script>
+        let timer = 300; // 30 seconds timer for each question
+
+        function updateTimer() {
+            document.getElementById("timer").innerText = `Time remaining: ${timer}s`;
+            if (timer <= 0) {
+                alert("Time's up!");
+                document.querySelector("form").submit();
+            } else {
+                timer--;
+            }
+        }
+
+        setInterval(updateTimer, 1000); // Update timer every second
+    </script>
+</head>
+<body>
+    <h1>Quiz</h1>
+    <form action="/submit" method="POST">
+        <p id="timer">Time remaining: 5m</p>
+
+        <% questions.forEach(function(question) { %>
+            <div>
+                <p><%= question.question %></p>
+                <input type="radio" name="question_<%= question.id %>" value="a"> <%= question.option_a %><br>
+                <input type="radio" name="question_<%= question.id %>" value="b"> <%= question.option_b %><br>
+                <input type="radio" name="question_<%= question.id %>" value="c"> <%= question.option_c %><br>
+                <input type="radio" name="question_<%= question.id %>" value="d"> <%= question.option_d %><br>
+            </div>
+        <% }); %>
+
+        <button type="submit">Submit Quiz</button>
+    </form>
+
+    <% if (user) { %>
+        <p>Hello, <%= user.username %></p>
+        <a href="/logout">Logout</a>
+    <% } else { %>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+    <% } %>
+</body>
+</html>
